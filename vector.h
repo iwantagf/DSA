@@ -106,7 +106,7 @@ neu la int co the dung vector(int) chang han <33333
 #define vector_set_size(vec, n) \
     do {\
         if (vec) \
-            vector_to_base(vec)->size = n;\
+            vector_to_base(vec)->size = (size_t) n;\
     } while (0)
 
 //set capacity
@@ -141,7 +141,7 @@ neu la int co the dung vector(int) chang han <33333
         else { \
             void *p = vector_lib_malloc(sz); \
             vector_lib_assert(p); \
-            (vec) = base_to_vector(p2); \
+            (vec) = base_to_vector(p); \
             vector_set_size((vec), 0); \
             vector_set_elem_destructor((vec), NULL); \
         }\
@@ -179,12 +179,12 @@ neu la int co the dung vector(int) chang han <33333
 //vector::push_back()
 #define vector_push_back(vec, val) \
     do {\
-        size_t cap_ = vector_to_base(vec)->capacity; \
+        size_t cap_ = vector_capacity(vec); \
         if (cap_ <= vector_size(vec)) { \
             vector_grow((vec), next_capacity(cap_)); \
-        }\
+        } \
         (vec)[vector_size(vec)] = val; \
-       vector_set_size((vec), vector_size(vec) + 1); \ 
+       vector_set_size((vec), vector_size(vec) + 1); \
     } while (0)
 
 #define vector_pop_back(vec) \
@@ -193,7 +193,7 @@ neu la int co the dung vector(int) chang han <33333
         if (elem_destructor) {\
             elem_destructor(&(vec)[vector_size(vec) - 1]); \
         } \
-        vector_set_size(vec, vector_to_base(vec) - 1); \
+        vector_set_size(vec, vector_size(vec) - 1); \
     } while (0)
 
 //vector::clear()
@@ -216,7 +216,7 @@ neu la int co the dung vector(int) chang han <33333
     do {\
         if (!(vec)) { \
             vector_reserve((vec), cap); \
-            vector_set_elem_destructor((vec), (elem_des));
+            vector_set_elem_destructor((vec), (elem_des)); \
         } \
     } while (0)
 
@@ -234,7 +234,7 @@ neu la int co the dung vector(int) chang han <33333
                 } while (vec_size < sz_); \
             } \
             else { \
-                while (sz_ < vec_size--) {\ 
+                while (sz_ < vec_size--) {\
                     vector_pop_back(vec); \
                 }\
             } \
@@ -250,9 +250,9 @@ neu la int co the dung vector(int) chang han <33333
             if (A) {\
                 size_t pos; \
                 for (pos = 0; pos < vector_size(vec); ++pos) \
-                    A(&(vec)[pos]);
-            }\
-            vector_lib_free(p1);
+                    A(&(vec)[pos]); \
+            } \
+            vector_lib_free(p1); \
         } \
     } while (0)
 
@@ -265,14 +265,15 @@ neu la int co the dung vector(int) chang han <33333
 #define vector_back(vec) \
     ((vec) ? ((vector_size(vec) > 0) ? vector_at(vec, vector_size(vec) - 1) : NULL) : NULL)
 
+// for (int i : vec)
 #define vector_for_each_in(it, vec) \
     for (it = vector_begin(vec); it < vector_end(vec); it++)
 
 #define vector_for_each(vec, func) \
-    do {\
+    do { \
         if ((vec) && (func) != NULL) { \
             size_t pos; \
-            for (pos = 0; pos < vector_size(vec); ++pos) \
-                func(vec[pos]); \
+            for (pos = 0; pos < vector_size(vec); pos++) \
+                func(pos); \
         } \
     } while (0)
