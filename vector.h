@@ -62,7 +62,7 @@ typedef struct vector_metadata {
     do {\
         typeof(x) _tmp = (x); \
         (x) = (y); \
-        (y) = (x); \
+        (y) = _tmp; \
     } while (0)
 
 
